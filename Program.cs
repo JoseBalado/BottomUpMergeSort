@@ -7,6 +7,8 @@ public class Example
 {
     public static async Task Main(string[] args)
     {
+        ReadFile();
+
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
 
@@ -81,6 +83,24 @@ public class Example
         // Display status of all tasks.
         foreach (var task in tasks)
             Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
+    }
+
+    static void ReadFile()
+    {
+        try
+        {
+            // Open the text file using a stream reader.
+            using (var sr = new StreamReader("Sample.txt"))
+            {
+                // Read the stream as a string, and write the string to the console.
+                Console.WriteLine(sr.ReadToEnd());
+            }
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine("The file could not be read:");
+            Console.WriteLine(e.Message);
+        }
     }
 
     static void DoSomeWork(int taskNum, CancellationToken ct)
