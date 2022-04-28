@@ -16,7 +16,7 @@ public class Example
         var tasks = new ConcurrentBag<Task>();
 
         Console.WriteLine("Please, enter filename ...");
-        var fileName = Console.ReadLine() ?? "";
+        var fileName = "Sample.txt"; // Console.ReadLine() ?? "";
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
         Console.WriteLine();
 
@@ -115,7 +115,7 @@ public class Example
         }
     }
 
-    static void ProcessFile(string textFile, CancellationToken ct)
+    static void ProcessFile(string text, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
@@ -124,7 +124,23 @@ public class Example
             ct.ThrowIfCancellationRequested();
         }
 
-        Console.WriteLine(textFile);
+        Console.WriteLine("The number of processors on this computer is {0}.", Environment.ProcessorCount);
+
+        var words = text.Split();
+        var dictionary = new ConcurrentDictionary<string, int>();
+        foreach(string word in words)
+        {
+            Console.Write(word + " - ");
+            dictionary.AddOrUpdate(
+                word,
+                1,
+                (key, value) => ++value
+            );
+        }
+
+        dictionary
+            .ToList()
+            .ForEach(element => Console.WriteLine($"Key: {element.Key} -> Value: {element.Value}"));
 
         if (ct.IsCancellationRequested)
         {
