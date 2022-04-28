@@ -26,13 +26,16 @@ public class Example
         Console.WriteLine();
 
         // Try asynchronous reading
-        var fileText = ReadFile(fileName);
+        var text = ReadFile(fileName);
 
         // Request cancellation of a single task when the token source is canceled.
         // Pass the token to the user delegate, and also to the task so it can
         // handle the exception correctly.
-        t = Task.Run(() => ProcessFile(1, token), token);
+        t = Task.Run(() => ProcessFile(text, token), token);
         Console.WriteLine("Task {0} executing", t.Id);
+
+        /*
+
         tasks.Add(t);
 
         // Request cancellation of a task and its children. Note the token is passed
@@ -46,17 +49,19 @@ public class Example
             {
                 // For each child task, pass the same token
                 // to each user delegate and to Task.Run.
-                tc = Task.Run(() => ProcessFile(i, token), token);
+                tc = Task.Run(() => ProcessFile(text, token), token);
                 Console.WriteLine("Task {0} executing", tc.Id);
                 tasks.Add(tc);
                 // Pass the same token again to do work on the parent task.
                 // All will be signaled by the call to tokenSource.Cancel below.
-                ProcessFile(2, token);
+                ProcessFile(text, token);
             }
         }, token);
 
         Console.WriteLine("Task {0} executing", t.Id);
         tasks.Add(t);
+
+        */
 
         // Request cancellation from the UI thread.
         char ch = Console.ReadKey().KeyChar;
@@ -110,35 +115,21 @@ public class Example
         }
     }
 
-    static void ProcessFile(int taskNum, CancellationToken ct)
+    static void ProcessFile(string textFile, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
         {
-            Console.WriteLine("Task {0} was cancelled before it got started.",
-                              taskNum);
+            Console.WriteLine("Task cancelled.");
             ct.ThrowIfCancellationRequested();
         }
 
-        int maxIterations = 100;
+        Console.WriteLine(textFile);
 
-        // NOTE!!! A "TaskCanceledException was unhandled
-        // by user code" error will be raised here if "Just My Code"
-        // is enabled on your computer. On Express editions JMC is
-        // enabled and cannot be disabled. The exception is benign.
-        // Just press F5 to continue executing your code.
-        for (int i = 0; i <= maxIterations; i++)
+        if (ct.IsCancellationRequested)
         {
-            // Do a bit of work. Not too much.
-            var sw = new SpinWait();
-            for (int j = 0; j <= 100; j++)
-                sw.SpinOnce();
-
-            if (ct.IsCancellationRequested)
-            {
-                Console.WriteLine("Task {0} cancelled", taskNum);
-                ct.ThrowIfCancellationRequested();
-            }
+            Console.WriteLine("Task cancelled");
+            ct.ThrowIfCancellationRequested();
         }
     }
 }
