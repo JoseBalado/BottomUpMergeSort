@@ -7,8 +7,6 @@ public class Example
 {
     public static async Task Main(string[] args)
     {
-        ReadFile();
-
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
 
@@ -17,10 +15,18 @@ public class Example
         Task t;
         var tasks = new ConcurrentBag<Task>();
 
+        Console.WriteLine("Please, enter filename ...");
+        var fileName = Console.ReadLine();
+        Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
+        Console.WriteLine();
+
         Console.WriteLine("Press any key to begin tasks...");
         Console.ReadKey(true);
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
         Console.WriteLine();
+
+        // Try asynchronous reading
+        ReadFile(fileName);
 
         // Request cancellation of a single task when the token source is canceled.
         // Pass the token to the user delegate, and also to the task so it can
@@ -85,12 +91,12 @@ public class Example
             Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
     }
 
-    static void ReadFile()
+    static void ReadFile(string fileName)
     {
         try
         {
             // Open the text file using a stream reader.
-            using (var sr = new StreamReader("Sample.txt"))
+            using (var sr = new StreamReader(fileName))
             {
                 // Read the stream as a string, and write the string to the console.
                 Console.WriteLine(sr.ReadToEnd());
