@@ -130,7 +130,6 @@ public class Example
         var dictionary = new ConcurrentDictionary<string, int>();
         foreach(string word in words)
         {
-            Console.Write(word + " - ");
             dictionary.AddOrUpdate(
                 word,
                 1,
@@ -138,9 +137,11 @@ public class Example
             );
         }
 
+        Console.WriteLine($"Word" + "Occurrence".PadLeft(27));
+
         dictionary
             .ToList()
-            .ForEach(element => Console.WriteLine($"Key: {element.Key} -> Value: {element.Value}"));
+            .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
         if (ct.IsCancellationRequested)
         {
