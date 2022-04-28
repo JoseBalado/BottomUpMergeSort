@@ -16,7 +16,7 @@ public class Example
         var tasks = new ConcurrentBag<Task>();
 
         Console.WriteLine("Please, enter filename ...");
-        var fileName = Console.ReadLine();
+        var fileName = Console.ReadLine() ?? "";
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
         Console.WriteLine();
 
@@ -26,7 +26,7 @@ public class Example
         Console.WriteLine();
 
         // Try asynchronous reading
-        ReadFile(fileName);
+        var fileText = ReadFile(fileName);
 
         // Request cancellation of a single task when the token source is canceled.
         // Pass the token to the user delegate, and also to the task so it can
@@ -91,7 +91,7 @@ public class Example
             Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
     }
 
-    static void ReadFile(string fileName)
+    static string ReadFile(string fileName)
     {
         try
         {
@@ -99,13 +99,14 @@ public class Example
             using (var sr = new StreamReader(fileName))
             {
                 // Read the stream as a string, and write the string to the console.
-                Console.WriteLine(sr.ReadToEnd());
+                return sr.ReadToEnd().ToString();
             }
         }
         catch (IOException e)
         {
             Console.WriteLine("The file could not be read:");
             Console.WriteLine(e.Message);
+            return "";
         }
     }
 
