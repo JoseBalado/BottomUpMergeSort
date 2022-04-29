@@ -12,7 +12,7 @@ public class Example
 
         // Store references to the tasks so that we can wait on them and
         // observe their status after cancellation.
-        Task t;
+        // Task t;
         var tasks = new ConcurrentBag<Task>();
 
         Console.WriteLine("Please, enter filename ...");
@@ -27,12 +27,21 @@ public class Example
 
         // Try asynchronous reading
         var text = ReadFile(fileName);
+        var concurrentDictionary = new ConcurrentDictionary<string, int>();
 
-        // Request cancellation of a single task when the token source is canceled.
-        // Pass the token to the user delegate, and also to the task so it can
-        // handle the exception correctly.
-        t = Task.Run(() => ProcessFile(text, token), token);
-        Console.WriteLine("Task {0} executing", t.Id);
+        // Split the text in as many arrays as proccessors.
+        var wordsArray = text.Split();
+        var arrays = wordsArray.SplitArrayIntoArrays(Environment.ProcessorCount);
+
+        foreach (var array in arrays)
+        {
+            Console.WriteLine(String.Join(", ", array));
+        }
+
+        foreach (var array in arrays)
+        {
+            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, token), token));
+        }
 
         /*
 
@@ -63,6 +72,7 @@ public class Example
 
         */
 
+
         // Request cancellation from the UI thread.
         char ch = Console.ReadKey().KeyChar;
         if (ch == 'c' || ch == 'C')
@@ -81,6 +91,10 @@ public class Example
         try
         {
             await Task.WhenAll(tasks.ToArray());
+            concurrentDictionary
+                .OrderByDescending(element => element.Value)
+                .ToList()
+                .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
         }
         catch (OperationCanceledException)
         {
@@ -115,7 +129,7 @@ public class Example
         }
     }
 
-    static void ProcessFile(string text, CancellationToken ct)
+    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
@@ -124,30 +138,30 @@ public class Example
             ct.ThrowIfCancellationRequested();
         }
 
-        Console.WriteLine("The number of processors on this computer is {0}.", Environment.ProcessorCount);
-
-        var words = text.Split();
-        var dictionary = new ConcurrentDictionary<string, int>();
-        foreach(string word in words)
+        foreach(string word in arr)
         {
-            dictionary.AddOrUpdate(
+            concurrentDictionary.AddOrUpdate(
                 word,
                 1,
                 (key, value) => ++value
             );
         }
 
-        Console.WriteLine($"Word" + "Occurrence".PadLeft(27));
-
-        dictionary
-            .OrderBy(element => element.Value)
-            .ToList()
-            .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
         if (ct.IsCancellationRequested)
         {
             Console.WriteLine("Task cancelled");
             ct.ThrowIfCancellationRequested();
+        }
+    }
+}
+
+public static class Extensions
+{
+    public static IEnumerable<IEnumerable<T>> SplitArrayIntoArrays<T>(this T[] arr, int size)
+    {
+        for (var i = 0; i < arr.Length / size + 1; i++) {
+            yield return arr.Skip(i * size).Take(size);
         }
     }
 }
