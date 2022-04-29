@@ -185,7 +185,7 @@ public static class Extensions
  class PercentageCounter
  {
         private int _numberOfTasks;
-        private int _total = 0;
+        private float _total = 0;
 
         public PercentageCounter(int numberOfTasks)
         {
@@ -196,8 +196,8 @@ public static class Extensions
         {
             lock(this)
             {
-                _total = _total + 100 / _numberOfTasks;
-                Console.Write($"{_total}% / ");
+                _total = _total + 100 / (float)_numberOfTasks;
+                Console.Write($"{_total:N0}% / ");
             }
         }
     }
