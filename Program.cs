@@ -31,19 +31,20 @@ public class Example
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
-        var arrays = wordsArray.SplitArrayIntoArrays(Environment.ProcessorCount);
+        var arrays = wordsArray.SplitArrayIntoArrays(wordsArray.Length / Environment.ProcessorCount - 1);
 
         foreach (var array in arrays)
         {
             Console.WriteLine(String.Join(", ", array));
         }
 
+        Console.WriteLine("Start processing");
+
         foreach (var array in arrays)
         {
             tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, token), token));
         }
 
-        Console.WriteLine("Completed: ");
         /*
 
         tasks.Add(t);
@@ -92,6 +93,11 @@ public class Example
         try
         {
             await Task.WhenAll(tasks.ToArray());
+
+            Console.WriteLine();
+            Console.WriteLine("Finished.");
+            Console.WriteLine();
+
             concurrentDictionary
                 .OrderByDescending(element => element.Value)
                 .ToList()
@@ -148,7 +154,7 @@ public class Example
             );
         }
 
-        Console.Write("///");
+        Console.Write("10% / ");
 
         if (ct.IsCancellationRequested)
         {
