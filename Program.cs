@@ -31,11 +31,14 @@ public class Example
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
+
         var processorCount = Environment.ProcessorCount;
         var size = wordsArray.Length / processorCount;
         if (size == 0) size = 1;
         var numberOfTasks = wordsArray.Length / size + 1;
         var arrays = wordsArray.SplitArrayIntoArrays(size);
+
+        PercentageCounter counter = new PercentageCounter(numberOfTasks);
 
         foreach (var array in arrays)
         {
@@ -46,7 +49,7 @@ public class Example
 
         foreach (var array in arrays)
         {
-            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, numberOfTasks, token), token));
+            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, counter, token), token));
         }
 
         /*
@@ -141,7 +144,7 @@ public class Example
         }
     }
 
-    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, int arraysLength, CancellationToken ct)
+    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageCounter counter, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
@@ -159,7 +162,7 @@ public class Example
             );
         }
 
-        Console.Write($"{100 / arraysLength}% / ");
+        counter.Add();
 
         if (ct.IsCancellationRequested)
         {
@@ -178,3 +181,23 @@ public static class Extensions
         }
     }
 }
+
+ class PercentageCounter
+    {
+        private int _numberOfTasks;
+        private int _total = 0;
+
+        public PercentageCounter(int numberOfTasks)
+        {
+            _numberOfTasks = numberOfTasks;
+        }
+
+        public void Add()
+        {
+            lock(this)
+            {
+                _total = _total + 100 / _numberOfTasks;
+                Console.Write($"{_total}% / ");
+            }
+        }
+    }
