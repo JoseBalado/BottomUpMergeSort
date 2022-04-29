@@ -43,6 +43,7 @@ public class Example
             tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, token), token));
         }
 
+        Console.WriteLine("Completed: ");
         /*
 
         tasks.Add(t);
@@ -147,6 +148,7 @@ public class Example
             );
         }
 
+        Console.Write("///");
 
         if (ct.IsCancellationRequested)
         {
