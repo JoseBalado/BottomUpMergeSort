@@ -40,11 +40,6 @@ public class Example
 
         PercentageCounter counter = new PercentageCounter(numberOfTasks);
 
-        foreach (var array in arrays)
-        {
-            Console.WriteLine(String.Join(", ", array));
-        }
-
         Console.WriteLine("Start processing");
 
         foreach (var array in arrays)
@@ -106,6 +101,10 @@ public class Example
             Console.WriteLine();
 
             Console.WriteLine($"{"word", -20} occurrence");
+
+            Console.WriteLine();
+            Console.WriteLine("Sorting results.");
+            Console.WriteLine();
             concurrentDictionary
                 .OrderByDescending(element => element.Value)
                 .ToList()
