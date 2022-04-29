@@ -31,7 +31,11 @@ public class Example
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
-        var arrays = wordsArray.SplitArrayIntoArrays(wordsArray.Length / Environment.ProcessorCount - 1);
+        var processorCount = Environment.ProcessorCount;
+        var size = wordsArray.Length / processorCount;
+        if (size == 0) size = 1;
+        var numberOfTasks = wordsArray.Length / size + 1;
+        var arrays = wordsArray.SplitArrayIntoArrays(size);
 
         foreach (var array in arrays)
         {
@@ -42,7 +46,7 @@ public class Example
 
         foreach (var array in arrays)
         {
-            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, token), token));
+            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, numberOfTasks, token), token));
         }
 
         /*
@@ -95,9 +99,10 @@ public class Example
             await Task.WhenAll(tasks.ToArray());
 
             Console.WriteLine();
-            Console.WriteLine("Finished.");
+            Console.WriteLine("100% - Finished.");
             Console.WriteLine();
 
+            Console.WriteLine($"{"word", -20} occurrence");
             concurrentDictionary
                 .OrderByDescending(element => element.Value)
                 .ToList()
@@ -136,7 +141,7 @@ public class Example
         }
     }
 
-    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, CancellationToken ct)
+    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, int arraysLength, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
@@ -154,7 +159,7 @@ public class Example
             );
         }
 
-        Console.Write("10% / ");
+        Console.Write($"{100 / arraysLength}% / ");
 
         if (ct.IsCancellationRequested)
         {
