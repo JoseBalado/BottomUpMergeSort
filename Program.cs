@@ -140,6 +140,7 @@ public class Example
         Console.WriteLine($"Word" + "Occurrence".PadLeft(27));
 
         dictionary
+            .OrderBy(element => element.Value)
             .ToList()
             .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
