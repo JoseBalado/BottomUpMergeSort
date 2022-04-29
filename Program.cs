@@ -33,7 +33,7 @@ public class Example
         var wordsArray = text.Split();
 
         var processorCount = Environment.ProcessorCount;
-        var size = wordsArray.Length / processorCount;
+        var size = wordsArray.Length / (processorCount - 2);
         if (size == 0) size = 1;
         var numberOfTasks = wordsArray.Length / size + 1;
         var arrays = wordsArray.SplitArrayIntoArrays(size);
@@ -183,7 +183,7 @@ public static class Extensions
 }
 
  class PercentageCounter
-    {
+ {
         private int _numberOfTasks;
         private int _total = 0;
 
