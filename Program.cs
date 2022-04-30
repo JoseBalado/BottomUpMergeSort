@@ -49,11 +49,11 @@ public class Example
         {
             var tasks = new ConcurrentBag<Task>();
             // Create some cancelable child tasks.
-            int maxNumberOfThreads = 4;
+            int maxNumberOfTasks = Environment.ProcessorCount / 2;
             int counter = 0;
             foreach (var array in arrays)
             {
-                if(counter < maxNumberOfThreads)
+                if(counter < maxNumberOfTasks)
                 {
                     tasks.Add(Task.Run(() => ProcessArray(array.ToList(), concurrentDictionary, percentageCounter, token), token));
                     counter ++;
@@ -139,7 +139,7 @@ public class Example
             ct.ThrowIfCancellationRequested();
         }
 
-        Thread.Sleep(2000);
+        Thread.Sleep(1000);
 
         foreach(string word in arr)
         {
