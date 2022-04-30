@@ -31,12 +31,12 @@ public class Example
         var wordsArray = text.Split();
 
         var processorCount = Environment.ProcessorCount;
-        var size = wordsArray.Length / (processorCount - 2);
+        var size = wordsArray.Length / (processorCount * 2);
         if (size == 0) size = 1;
         var numberOfTasks = wordsArray.Length / size + 1;
         var arrays = wordsArray.SplitArrayIntoArrays(size);
 
-        PercentageCounter counter = new PercentageCounter(numberOfTasks);
+        PercentageCounter percentageCounter = new PercentageCounter(numberOfTasks);
 
         Console.WriteLine("Start processing");
 
@@ -49,9 +49,20 @@ public class Example
         {
             var tasks = new ConcurrentBag<Task>();
             // Create some cancelable child tasks.
+            int maxNumberOfThreads = 4;
+            int counter = 0;
             foreach (var array in arrays)
             {
-                tasks.Add(Task.Run(() => ProcessArray(array.ToList(), concurrentDictionary, counter, token), token));
+                if(counter < maxNumberOfThreads)
+                {
+                    tasks.Add(Task.Run(() => ProcessArray(array.ToList(), concurrentDictionary, percentageCounter, token), token));
+                    counter ++;
+                }
+                else
+                {
+                    await Task.WhenAll(tasks.ToArray());
+                    counter = 0;
+                }
             }
 
             await Task.WhenAll(tasks.ToArray());
@@ -85,7 +96,6 @@ public class Example
         {
             await t;
             Console.WriteLine("End");
-
         }
         catch (OperationCanceledException)
         {
@@ -128,6 +138,8 @@ public class Example
             Console.WriteLine("Task cancelled.");
             ct.ThrowIfCancellationRequested();
         }
+
+        Thread.Sleep(2000);
 
         foreach(string word in arr)
         {
@@ -173,7 +185,7 @@ class PercentageCounter
         lock (this)
         {
             _total = _total + 100 / (float)_numberOfTasks;
-            Console.Write($"{_total:N0}% / ");
+            Console.Write($"{_total:N1}% / ");
         }
     }
 }
