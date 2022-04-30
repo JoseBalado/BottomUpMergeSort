@@ -218,7 +218,7 @@ class BottomUpMergeSort
             .ToList();
     }
 
-    private static BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
+    // private static BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
 
     public static BlockingCollection<WordOccurrences> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
     {
@@ -243,6 +243,8 @@ class BottomUpMergeSort
     public static void merge(BlockingCollection<WordOccurrences> blockingCollection, int lo, int mid, int hi)
     {
         int i = lo, j = mid + 1;
+
+        BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
 
         blockingCollection
             .ToList()
