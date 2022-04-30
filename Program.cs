@@ -55,14 +55,10 @@ public class Example
             }
 
             await Task.WhenAll(tasks.ToArray());
-
-            Console.WriteLine();
-            Console.WriteLine("100% - Finished.");
-            Console.WriteLine();
+            Console.WriteLine("100%");
 
             Console.WriteLine();
             Console.WriteLine("Sorting results.");
-            Console.WriteLine();
             Console.WriteLine($"{"word", -20} occurrence");
             concurrentDictionary
                 .OrderByDescending(element => element.Value)
