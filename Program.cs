@@ -25,33 +25,29 @@ public class Example
 
         // Try asynchronous reading
         var text = ReadFile(fileName);
-        var concurrentDictionary = new ConcurrentDictionary<string, int>();
+        // var concurrentDictionary = new ConcurrentDictionary<string, int>();
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
         var numberOfWords = 5;
         var numberOfTasks = wordsArray.Length / numberOfWords + 1;
+        var concurrencyLevel = Environment.ProcessorCount / 2;
+        var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
+
         var arrays = wordsArray.SplitArrayIntoArrays(numberOfWords);
 
         PercentageCounter percentageCounter = new PercentageCounter(numberOfTasks);
 
         Console.WriteLine("Start processing");
 
-       // tasks.Add(t);
-
-        // Request cancellation of a task and its children. Note the token is passed
-        // to (1) the user delegate and (2) as the second argument to Task.Run, so
-        // that the task instance can correctly handle the OperationCanceledException.
         Task t = Task.Run(async () =>
         {
             var tasks = new ConcurrentBag<Task>();
-            // Create some cancelable child tasks.
-            int maxNumberOfTasks = Environment.ProcessorCount / 2;
             int counter = 0;
             foreach (var array in arrays)
             {
-                if(counter < maxNumberOfTasks)
+                if(counter < concurrencyLevel)
                 {
                     tasks.Add(Task.Run(() => ProcessArray(array.ToList(), concurrentDictionary, percentageCounter, token), token));
                     counter ++;
