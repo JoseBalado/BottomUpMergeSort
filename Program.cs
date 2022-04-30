@@ -13,16 +13,14 @@ public class Example
         // Store references to the tasks so that we can wait on them and
         // observe their status after cancellation.
         // Task t;
-        var tasks = new ConcurrentBag<Task>();
 
         Console.WriteLine("Please, enter filename ...");
         var fileName = "Sample.txt"; // Console.ReadLine() ?? "";
-        Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
         Console.WriteLine();
 
         Console.WriteLine("Press any key to begin tasks...");
-        Console.ReadKey(true);
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
+        Console.ReadKey(true);
         Console.WriteLine();
 
         // Try asynchronous reading
@@ -42,40 +40,35 @@ public class Example
 
         Console.WriteLine("Start processing");
 
-        foreach (var array in arrays)
-        {
-            tasks.Add(Task.Run(() => ProcessFile(array.ToList(), concurrentDictionary, counter, token), token));
-        }
-
-        /*
-
-        tasks.Add(t);
+       // tasks.Add(t);
 
         // Request cancellation of a task and its children. Note the token is passed
         // to (1) the user delegate and (2) as the second argument to Task.Run, so
         // that the task instance can correctly handle the OperationCanceledException.
-        t = Task.Run(() =>
+        Task t = Task.Run(async () =>
         {
+            var tasks = new ConcurrentBag<Task>();
             // Create some cancelable child tasks.
-            Task tc;
-            for (int i = 3; i <= 10; i++)
+            foreach (var array in arrays)
             {
-                // For each child task, pass the same token
-                // to each user delegate and to Task.Run.
-                tc = Task.Run(() => ProcessFile(text, token), token);
-                Console.WriteLine("Task {0} executing", tc.Id);
-                tasks.Add(tc);
-                // Pass the same token again to do work on the parent task.
-                // All will be signaled by the call to tokenSource.Cancel below.
-                ProcessFile(text, token);
+                tasks.Add(Task.Run(() => ProcessArray(array.ToList(), concurrentDictionary, counter, token), token));
             }
+
+            await Task.WhenAll(tasks.ToArray());
+
+            Console.WriteLine();
+            Console.WriteLine("100% - Finished.");
+            Console.WriteLine();
+
+            Console.WriteLine();
+            Console.WriteLine("Sorting results.");
+            Console.WriteLine();
+            Console.WriteLine($"{"word", -20} occurrence");
+            concurrentDictionary
+                .OrderByDescending(element => element.Value)
+                .ToList()
+                .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
         }, token);
-
-        Console.WriteLine("Task {0} executing", t.Id);
-        tasks.Add(t);
-
-        */
-
 
         // Request cancellation from the UI thread.
         char ch = Console.ReadKey().KeyChar;
@@ -94,21 +87,9 @@ public class Example
 
         try
         {
-            await Task.WhenAll(tasks.ToArray());
+            await t;
+            Console.WriteLine("End");
 
-            Console.WriteLine();
-            Console.WriteLine("100% - Finished.");
-            Console.WriteLine();
-
-            Console.WriteLine($"{"word", -20} occurrence");
-
-            Console.WriteLine();
-            Console.WriteLine("Sorting results.");
-            Console.WriteLine();
-            concurrentDictionary
-                .OrderByDescending(element => element.Value)
-                .ToList()
-                .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
         }
         catch (OperationCanceledException)
         {
@@ -120,8 +101,8 @@ public class Example
         }
 
         // Display status of all tasks.
-        foreach (var task in tasks)
-            Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
+        // foreach (var task in tasks)
+        //     Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
     }
 
     static string ReadFile(string fileName)
@@ -143,7 +124,7 @@ public class Example
         }
     }
 
-    static void ProcessFile(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageCounter counter, CancellationToken ct)
+    static void ProcessArray(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageCounter counter, CancellationToken ct)
     {
         // Was cancellation already requested?
         if (ct.IsCancellationRequested)
@@ -181,22 +162,22 @@ public static class Extensions
     }
 }
 
- class PercentageCounter
- {
-        private int _numberOfTasks;
-        private float _total = 0;
+class PercentageCounter
+{
+    private int _numberOfTasks;
+    private float _total = 0;
 
-        public PercentageCounter(int numberOfTasks)
-        {
-            _numberOfTasks = numberOfTasks;
-        }
+    public PercentageCounter(int numberOfTasks)
+    {
+        _numberOfTasks = numberOfTasks;
+    }
 
-        public void Add()
+    public void Add()
+    {
+        lock (this)
         {
-            lock(this)
-            {
-                _total = _total + 100 / (float)_numberOfTasks;
-                Console.Write($"{_total:N0}% / ");
-            }
+            _total = _total + 100 / (float)_numberOfTasks;
+            Console.Write($"{_total:N0}% / ");
         }
     }
+}
