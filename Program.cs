@@ -264,7 +264,7 @@ class BottomUpMergeSort
                 blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(i).occurrences;
                 i++;
             }
-            else if (auxBC.ElementAt(j).occurrences < auxBC.ElementAt(i).occurrences)
+            else if (auxBC.ElementAt(j).occurrences > auxBC.ElementAt(i).occurrences)
             {
 
                 blockingCollection.ElementAt(k).word = auxBC.ElementAt(j).word;
