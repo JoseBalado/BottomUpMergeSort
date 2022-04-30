@@ -30,11 +30,9 @@ public class Example
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
-        var processorCount = Environment.ProcessorCount;
-        var size = wordsArray.Length / (processorCount * 2);
-        if (size == 0) size = 1;
-        var numberOfTasks = wordsArray.Length / size + 1;
-        var arrays = wordsArray.SplitArrayIntoArrays(size);
+        var numberOfWords = 5;
+        var numberOfTasks = wordsArray.Length / numberOfWords + 1;
+        var arrays = wordsArray.SplitArrayIntoArrays(numberOfWords);
 
         PercentageCounter percentageCounter = new PercentageCounter(numberOfTasks);
 
@@ -162,10 +160,10 @@ public class Example
 
 public static class Extensions
 {
-    public static IEnumerable<IEnumerable<T>> SplitArrayIntoArrays<T>(this T[] arr, int size)
+    public static IEnumerable<IEnumerable<T>> SplitArrayIntoArrays<T>(this T[] arr, int numberOfWords)
     {
-        for (var i = 0; i < arr.Length / size + 1; i++) {
-            yield return arr.Skip(i * size).Take(size);
+        for (var i = 0; i < arr.Length / numberOfWords + 1; i++) {
+            yield return arr.Skip(i * numberOfWords).Take(numberOfWords);
         }
     }
 }
