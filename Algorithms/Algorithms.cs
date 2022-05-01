@@ -5,7 +5,7 @@ namespace Algorithms
 {
     class BottomUpMergeSort
     {
-        public static List<DataFormat> Sort(ConcurrentDictionary<string, int> concurrentDictionary, ILogger logger)
+        public static List<DataFormat> Sort(ConcurrentDictionary<string, int> concurrentDictionary, ILogger logger, CancellationToken ct)
         {
             var blockingCollection = new List<DataFormat>(concurrentDictionary.Count);
 
@@ -28,14 +28,17 @@ namespace Algorithms
                 // sz: subarray size
                 for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
                 {
-                    // tasks.Add(Task.Run(() => Merge(blockingCollection, auxBC, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1))));
+                    if (ct.IsCancellationRequested)
+                    {
+                        Console.WriteLine("Task cancelled.");
+                        ct.ThrowIfCancellationRequested();
+                    }
+
                     Merge(blockingCollection, auxBC, lo, lo + sz - 1, Math.Min(lo + sz + sz - 1, N - 1));
-                    // await Task.WhenAll(tasks.ToArray());
                 }
 
                 logger.Add();
                 Thread.Sleep(500);
-                // await Task.WhenAll(tasks.ToArray());
             }
 
             logger.Finish();

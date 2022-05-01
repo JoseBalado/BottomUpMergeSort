@@ -69,14 +69,10 @@ public class Example
             percentageCounter.Finish();
 
             Console.WriteLine();
-            Console.WriteLine("Sorting results.");
-            // concurrentDictionary
-            //     .OrderByDescending(element => element.Value)
-            //     .ToList()
-            //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
+            Console.Write("Sorting results: ");
 
             Console.WriteLine($"{"word", -20} occurrence");
-            Sort(concurrentDictionary, new PercentageLogger((int)Math.Log(wordsArray.Length)))
+            Sort(concurrentDictionary, new PercentageLogger((int)Math.Log(wordsArray.Length)), token)
                 // .ToList()
                 // .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
                 ;
