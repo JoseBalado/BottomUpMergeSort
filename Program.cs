@@ -113,7 +113,7 @@ public class Example
         try
         {
             // Open the text file using a stream reader.
-            using (var sr = new StreamReader(fileName))
+            using (var sr = new StreamReader($"text_files{Path.DirectorySeparatorChar}{fileName}"))
             {
                 // Read the stream as a string, and write the string to the console.
                 return sr.ReadToEnd().ToString();
