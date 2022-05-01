@@ -1,12 +1,12 @@
 
 namespace Logger
 {
-    public class PercentageCounter
+    public class PercentageLogger
     {
         private int _numberOfTasks;
         private float _total = 0;
 
-        public PercentageCounter(int numberOfTasks)
+        public PercentageLogger(int numberOfTasks)
         {
             _numberOfTasks = numberOfTasks;
         }
