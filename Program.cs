@@ -37,7 +37,7 @@ public class Example
 
         var numberOfWordsPerArray = 500;
         var numberOfTasks = wordsArray.Length / numberOfWordsPerArray + 1;
-        var concurrencyLevel = Environment.ProcessorCount / 2;
+        var concurrencyLevel = Environment.ProcessorCount;
         var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
 
         var arrays = wordsArray.SplitArrayIntoArrays(numberOfWordsPerArray);
@@ -48,8 +48,8 @@ public class Example
 
         Task t = Task.Run(async () =>
         {
-
             var tasks = new ConcurrentBag<Task>();
+            // Do not lunch more Tasks than concurrencyLevel indicates.
             int counter = 0;
             foreach (var array in arrays)
             {
