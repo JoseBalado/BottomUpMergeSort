@@ -23,7 +23,7 @@ namespace Utils
             }
         }
 
-        public static void ProcessArray(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageLogger counter, CancellationToken ct)
+        public static void ProcessArray(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, ILogger counter, CancellationToken ct)
         {
             // Was cancellation already requested?
             if (ct.IsCancellationRequested)

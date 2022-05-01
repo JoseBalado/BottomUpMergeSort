@@ -42,7 +42,7 @@ public class Example
 
         var arrays = wordsArray.SplitArrayIntoArrays(numberOfWords);
 
-        PercentageLogger percentageCounter = new PercentageLogger(numberOfTasks);
+        ILogger percentageCounter = new PercentageLogger(numberOfTasks);
 
         Console.WriteLine("Start processing");
 

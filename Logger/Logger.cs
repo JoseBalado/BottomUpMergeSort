@@ -1,7 +1,11 @@
 
+interface ILogger
+{
+    void Add();
+}
 namespace Logger
 {
-    public class PercentageLogger
+    public class PercentageLogger : ILogger
     {
         private int _numberOfTasks;
         private float _total = 0;
