@@ -21,7 +21,7 @@ public class Example
 
         Console.WriteLine("Please, enter filename ...");
         var fileName = "sdd.txt"; // Console.ReadLine() ?? "";
-        Console.WriteLine();
+        var text = ReadFile(fileName);
 
         Console.WriteLine("Press any key to begin tasks...");
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
@@ -29,14 +29,14 @@ public class Example
         Console.WriteLine();
 
         // Try asynchronous reading
-        var text = ReadFile(fileName);
         // var concurrentDictionary = new ConcurrentDictionary<string, int>();
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
-        var numberOfWordsPerArray = 500;
+        var numberOfWordsPerArray = wordsArray.Length / 32;
         var numberOfTasks = wordsArray.Length / numberOfWordsPerArray + 1;
+        if (numberOfTasks == 0) numberOfTasks = 1;
         var concurrencyLevel = Environment.ProcessorCount;
         var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
 
@@ -75,6 +75,7 @@ public class Example
                 // .ToList()
                 // .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
                 ;
+            // Console.WriteLine("Press key to show results");
             Console.WriteLine($"{"word", -20} occurrence");
 
         }, token);
