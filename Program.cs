@@ -15,21 +15,14 @@ public class Example
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
 
-        // Store references to the tasks so that we can wait on them and
-        // observe their status after cancellation.
-        // Task t;
-
         Console.WriteLine("Please, enter filename ...");
-        var fileName = "sdd.txt"; // Console.ReadLine() ?? "";
+        var fileName = Console.ReadLine() ?? "";
         var text = ReadFile(fileName);
 
         Console.WriteLine("Press any key to begin tasks...");
         Console.WriteLine("To terminate the example, press 'c' to cancel and exit...");
         Console.ReadKey(true);
         Console.WriteLine();
-
-        // Try asynchronous reading
-        // var concurrentDictionary = new ConcurrentDictionary<string, int>();
 
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
@@ -76,19 +69,11 @@ public class Example
             Console.WriteLine("Press any key to show results");
         }, token);
 
-        // Request cancellation from the UI thread.
         char ch = Console.ReadKey().KeyChar;
         if (ch == 'c' || ch == 'C')
         {
             tokenSource.Cancel();
-            Console.WriteLine("\nTask cancellation requested.");
-
-            // Optional: Observe the change in the Status property on the task.
-            // It is not necessary to wait on tasks that have canceled. However,
-            // if you do wait, you must enclose the call in a try-catch block to
-            // catch the TaskCanceledExceptions that are thrown. If you do
-            // not wait, no exception is thrown if the token that was passed to the
-            // Task.Run method is the same token that requested the cancellation.
+            Console.WriteLine("Task cancellation requested.");
         }
 
         try
@@ -98,19 +83,15 @@ public class Example
             sortedArray
                 .ToList()
                 .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
-            Console.WriteLine("End");
+            Console.WriteLine("\t -- End --");
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine($"\n{nameof(OperationCanceledException)} thrown\n");
+            Console.WriteLine($"{nameof(OperationCanceledException)} thrown\n");
         }
         finally
         {
             tokenSource.Dispose();
         }
-
-        // Display status of all tasks.
-        // foreach (var task in tasks)
-        //     Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
     }
 }

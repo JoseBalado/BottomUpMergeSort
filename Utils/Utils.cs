@@ -19,7 +19,8 @@ namespace Utils
             {
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
-                return "";
+                Console.WriteLine("\t ------ Ending the application ------");
+                throw;
             }
         }
 
