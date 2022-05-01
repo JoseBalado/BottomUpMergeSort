@@ -66,19 +66,11 @@ public class Example
             Console.WriteLine();
             Console.WriteLine("Sorting results.");
             Console.WriteLine($"{"word", -20} occurrence");
-            // concurrentDictionary
-            //     .OrderByDescending(element => element.Value)
-            //     .ToList()
-            //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
-
-            // (await BottomUpMergeSort.Sort(concurrentDictionary))
-            //     .ToList()
-            //     .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
 
             var myList = concurrentDictionary
                 .ToList()
                 .Select(element => new WordOccurrences { word = element.Key, occurrences = element.Value });
-            (await BottomUpMergeSort.MergeSortRecursive(myList.ToList(), 0, concurrentDictionary.Count - 1))
+            (await Sort.MergeSortRecursive(myList.ToList(), 0, concurrentDictionary.Count - 1))
                 .ToList()
                 .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences}"));
         }, token);
@@ -202,7 +194,7 @@ class WordOccurrences
 
 }
 
-class BottomUpMergeSort
+class Sort
 {
     public static Task<List<WordOccurrences>> MergeSortRecursive(List<WordOccurrences> data, int left, int right)
     {
@@ -216,78 +208,12 @@ class BottomUpMergeSort
         }
         return Task.Run(() => data);
     }
-    private static List<WordOccurrences>  MergeRecursive(List<WordOccurrences> myList, int left, int right)
+    private static List<WordOccurrences> MergeRecursive(List<WordOccurrences> myList, int left, int right)
     {
         return myList
             .Skip(left)
             .Take(right - left)
             .OrderByDescending(element => element.occurrences)
             .ToList();
-    }
-
-    public static async Task<BlockingCollection<WordOccurrences>> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
-    {
-       var blockingCollection = new BlockingCollection<WordOccurrences>(concurrentDictionary.Count);
-
-        concurrentDictionary
-            .ToList()
-            .ForEach(element => blockingCollection.Add(new WordOccurrences { word = element.Key, occurrences = element.Value }));
-
-        var tasks = new List<Task>();
-
-
-        int N = concurrentDictionary.Count;
-        for (int sz = 1; sz < N; sz = sz + sz)
-        {
-            BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
-
-            blockingCollection
-                .ToList()
-                .ForEach(element => auxBC.Add(new WordOccurrences { word = element.word, occurrences = element.occurrences }));
-            // sz: subarray size
-            for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
-            {
-                tasks.Add(Task.Run(() => Merge(blockingCollection, auxBC, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1))));
-                // await Task.WhenAll(tasks.ToArray());
-            }
-            await Task.WhenAll(tasks.ToArray());
-        }
-
-        return blockingCollection;
-    }
-
-    public static void Merge(BlockingCollection<WordOccurrences> blockingCollection, BlockingCollection<WordOccurrences> auxBC, int lo, int mid, int hi)
-    {
-        int i = lo, j = mid + 1;
-
-
-        for (int k = lo; k <= hi; k++)
-        {
-            if (i > mid)
-            {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(j).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(j).occurrences;
-                j++;
-            }
-            else if (j > hi)
-            {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(i).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(i).occurrences;
-                i++;
-            }
-            else if (auxBC.ElementAt(j).occurrences > auxBC.ElementAt(i).occurrences)
-            {
-
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(j).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(j).occurrences;
-                j++;
-            }
-            else
-            {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(i).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(i).occurrences;
-                i++;
-            }
-        }
     }
 }
