@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using UserData;
+using Logger;
 
 namespace Algorithms
 {
@@ -38,7 +39,7 @@ namespace Algorithms
                 }
 
                 logger.Add();
-                // Thread.Sleep(500);
+                Thread.Sleep(500);
             }
 
             logger.Finish();

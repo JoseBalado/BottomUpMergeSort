@@ -1,11 +1,11 @@
 
-interface ILogger
-{
-    void Add();
-    void Finish();
-}
 namespace Logger
 {
+    interface ILogger
+    {
+        void Add();
+        void Finish();
+    }
     public class PercentageLogger : ILogger
     {
         private int _numberOfTasks;
