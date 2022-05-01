@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using UserData;
-using static Utils.Helper;
+using static Utils.Helpers;
+using Logger;
 
 public class Example
 {
@@ -111,62 +112,13 @@ public class Example
         // foreach (var task in tasks)
         //     Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
     }
-    static void ProcessArray(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageCounter counter, CancellationToken ct)
-    {
-        // Was cancellation already requested?
-        if (ct.IsCancellationRequested)
-        {
-            Console.WriteLine("Task cancelled.");
-            ct.ThrowIfCancellationRequested();
-        }
-
-        // Thread.Sleep(1000);
-
-        foreach(string word in arr)
-        {
-            concurrentDictionary.AddOrUpdate(
-                word,
-                1,
-                (key, value) => ++value
-            );
-        }
-
-        counter.Add();
-
-        if (ct.IsCancellationRequested)
-        {
-            Console.WriteLine("Task cancelled");
-            ct.ThrowIfCancellationRequested();
-        }
-    }
 }
-
 public static class Extensions
 {
     public static IEnumerable<IEnumerable<T>> SplitArrayIntoArrays<T>(this T[] arr, int numberOfWords)
     {
         for (var i = 0; i < arr.Length / numberOfWords + 1; i++) {
             yield return arr.Skip(i * numberOfWords).Take(numberOfWords);
-        }
-    }
-}
-
-class PercentageCounter
-{
-    private int _numberOfTasks;
-    private float _total = 0;
-
-    public PercentageCounter(int numberOfTasks)
-    {
-        _numberOfTasks = numberOfTasks;
-    }
-
-    public void Add()
-    {
-        lock (this)
-        {
-            _total = _total + 100 / (float)_numberOfTasks;
-            Console.Write($"{_total:N0}% / ");
         }
     }
 }

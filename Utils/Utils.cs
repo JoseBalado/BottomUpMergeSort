@@ -1,6 +1,8 @@
+using System.Collections.Concurrent;
+using Logger;
 namespace Utils
 {
-    class Helper
+    class Helpers
     {
         public static string ReadFile(string fileName)
         {
@@ -21,6 +23,33 @@ namespace Utils
             }
         }
 
+        public static void ProcessArray(List<string> arr, ConcurrentDictionary<string, int> concurrentDictionary, PercentageCounter counter, CancellationToken ct)
+        {
+            // Was cancellation already requested?
+            if (ct.IsCancellationRequested)
+            {
+                Console.WriteLine("Task cancelled.");
+                ct.ThrowIfCancellationRequested();
+            }
 
+            // Thread.Sleep(1000);
+
+            foreach (string word in arr)
+            {
+                concurrentDictionary.AddOrUpdate(
+                    word,
+                    1,
+                    (key, value) => ++value
+                );
+            }
+
+            counter.Add();
+
+            if (ct.IsCancellationRequested)
+            {
+                Console.WriteLine("Task cancelled");
+                ct.ThrowIfCancellationRequested();
+            }
+        }
     }
 }
