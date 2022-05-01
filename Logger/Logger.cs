@@ -2,6 +2,7 @@
 interface ILogger
 {
     void Add();
+    void Finish();
 }
 namespace Logger
 {
@@ -22,6 +23,11 @@ namespace Logger
                 _total = _total + 100 / (float)_numberOfTasks;
                 Console.Write($"{_total:N0}% / ");
             }
+        }
+
+        public void Finish()
+        {
+                Console.WriteLine("100%");
         }
     }
 }

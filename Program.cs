@@ -66,19 +66,21 @@ public class Example
             }
 
             await Task.WhenAll(tasks.ToArray());
-            Console.WriteLine("100%");
+            percentageCounter.Finish();
 
             Console.WriteLine();
             Console.WriteLine("Sorting results.");
-            Console.WriteLine($"{"word", -20} occurrence");
             // concurrentDictionary
             //     .OrderByDescending(element => element.Value)
             //     .ToList()
             //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
-            Sort(concurrentDictionary)
-                .ToList()
-                .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
+            Console.WriteLine($"{"word", -20} occurrence");
+            Sort(concurrentDictionary, new PercentageLogger((int)Math.Log(wordsArray.Length)))
+                // .ToList()
+                // .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
+                ;
+
         }, token);
 
         // Request cancellation from the UI thread.

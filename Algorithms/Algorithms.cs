@@ -5,7 +5,7 @@ namespace Algorithms
 {
     class BottomUpMergeSort
     {
-        public static List<DataFormat> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
+        public static List<DataFormat> Sort(ConcurrentDictionary<string, int> concurrentDictionary, ILogger logger)
         {
             var blockingCollection = new List<DataFormat>(concurrentDictionary.Count);
 
@@ -32,10 +32,13 @@ namespace Algorithms
                     Merge(blockingCollection, auxBC, lo, lo + sz - 1, Math.Min(lo + sz + sz - 1, N - 1));
                     // await Task.WhenAll(tasks.ToArray());
                 }
-                Console.WriteLine("Hello World");
+
+                logger.Add();
+                Thread.Sleep(500);
                 // await Task.WhenAll(tasks.ToArray());
             }
 
+            logger.Finish();
             return blockingCollection;
         }
 
