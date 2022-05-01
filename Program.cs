@@ -71,16 +71,16 @@ public class Example
             //     .ToList()
             //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
-            // (await BottomUpMergeSort.Sort(concurrentDictionary))
-            //     .ToList()
-            //     .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
+            (await BottomUpMergeSort.Sort(concurrentDictionary))
+                .ToList()
+                .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
 
-            var myList = concurrentDictionary
-                .ToList()
-                .Select(element => new WordOccurrences { word = element.Key, occurrences = element.Value });
-            BottomUpMergeSort.MergeSortRecursive(myList.ToList(), 0, concurrentDictionary.Count - 1)
-                .ToList()
-                .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences}"));
+            // var myList = concurrentDictionary
+            //     .ToList()
+            //     .Select(element => new WordOccurrences { word = element.Key, occurrences = element.Value });
+            // BottomUpMergeSort.MergeSortRecursive(myList.ToList(), 0, concurrentDictionary.Count - 1)
+            //     .ToList()
+            //     .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences}"));
         }, token);
 
         // Request cancellation from the UI thread.
@@ -212,11 +212,11 @@ class BottomUpMergeSort
 
             MergeSortRecursive(data, left, m);
             MergeSortRecursive(data, m + 1, right);
-            return Merge(data, left, right);
+            return MergeRecursive(data, left, right);
         }
         return data;
     }
-    private static List<WordOccurrences> Merge(List<WordOccurrences> myList, int left, int right)
+    private static List<WordOccurrences> MergeRecursive(List<WordOccurrences> myList, int left, int right)
     {
         return myList
             .Skip(left)
