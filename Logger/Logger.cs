@@ -20,8 +20,16 @@ namespace Logger
         {
             lock (this)
             {
-                _total = _total + 100 / (float)_numberOfTasks;
-                Console.Write($"{_total:N0}% / ");
+                var newTotal = _total + 100 / (float)_numberOfTasks;
+                if (((int)newTotal) == ((int)_total))
+                {
+                    _total = newTotal;
+                }
+                else
+                {
+                    _total = newTotal;
+                    Console.Write($"{_total:N0}% / ");
+                }
             }
         }
 

@@ -44,7 +44,7 @@ public class Example
 
         ILogger percentageCounter = new PercentageLogger(numberOfTasks);
 
-        Console.WriteLine("Start processing");
+        Console.Write("Start processing: ");
 
         Task t = Task.Run(async () =>
         {
@@ -71,11 +71,11 @@ public class Example
             Console.WriteLine();
             Console.Write("Sorting results: ");
 
-            Console.WriteLine($"{"word", -20} occurrence");
             Sort(concurrentDictionary, new PercentageLogger((int)Math.Log(wordsArray.Length)), token)
                 // .ToList()
                 // .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
                 ;
+            Console.WriteLine($"{"word", -20} occurrence");
 
         }, token);
 
