@@ -1,4 +1,5 @@
 ﻿using System;
+using UserData;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -188,22 +189,15 @@ class PercentageCounter
     }
 }
 
-class WordOccurrences
-{
-    public string word;
-    public int occurrences;
-
-}
-
 class BottomUpMergeSort
 {
-    public static List<WordOccurrences> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
+    public static List<DataFormat> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
     {
-       var blockingCollection = new List<WordOccurrences>(concurrentDictionary.Count);
+       var blockingCollection = new List<DataFormat>(concurrentDictionary.Count);
 
         concurrentDictionary
             .ToList()
-            .ForEach(element => blockingCollection.Add(new WordOccurrences { word = element.Key, occurrences = element.Value }));
+            .ForEach(element => blockingCollection.Add(new DataFormat { word = element.Key, occurrences = element.Value }));
 
         var tasks = new List<Task>();
 
@@ -211,11 +205,11 @@ class BottomUpMergeSort
         int N = concurrentDictionary.Count;
         for (int sz = 1; sz < N; sz = sz + sz)
         {
-            List<WordOccurrences> auxBC = new List<WordOccurrences>();
+            List<DataFormat> auxBC = new List<DataFormat>();
 
             blockingCollection
                 .ToList()
-                .ForEach(element => auxBC.Add(new WordOccurrences { word = element.word, occurrences = element.occurrences }));
+                .ForEach(element => auxBC.Add(new DataFormat { word = element.word, occurrences = element.occurrences }));
 
             // sz: subarray size
             for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
@@ -231,7 +225,7 @@ class BottomUpMergeSort
         return blockingCollection;
     }
 
-    public static void Merge(List<WordOccurrences> blockingCollection, List<WordOccurrences> auxBC, int lo, int mid, int hi)
+    public static void Merge(List<DataFormat> blockingCollection, List<DataFormat> auxBC, int lo, int mid, int hi)
     {
         int i = lo, j = mid + 1;
 
