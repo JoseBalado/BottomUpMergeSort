@@ -70,9 +70,17 @@ public class Example
             //     .OrderByDescending(element => element.Value)
             //     .ToList()
             //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
-            BottomUpMergeSort.Sort(concurrentDictionary)
+
+            // (await BottomUpMergeSort.Sort(concurrentDictionary))
+            //     .ToList()
+            //     .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
+
+            var myList = concurrentDictionary
                 .ToList()
-                .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
+                .Select(element => new WordOccurrences { word = element.Key, occurrences = element.Value });
+            BottomUpMergeSort.MergeSortRecursive(myList.ToList(), 0, concurrentDictionary.Count - 1)
+                .ToList()
+                .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences}"));
         }, token);
 
         // Request cancellation from the UI thread.
@@ -202,12 +210,11 @@ class BottomUpMergeSort
         {
             int m = left + (right - left) / 2;
 
-            var dataLeft = MergeSortRecursive(data, left, m);
-            var dataRight = MergeSortRecursive(data, m + 1, right);
-            return Merge(dataLeft.Concat(dataRight).ToList(), left, right);
+            MergeSortRecursive(data, left, m);
+            MergeSortRecursive(data, m + 1, right);
+            return Merge(data, left, right);
         }
-        var myList = new List<WordOccurrences>();
-        return myList;
+        return data;
     }
     private static List<WordOccurrences> Merge(List<WordOccurrences> myList, int left, int right)
     {
@@ -220,7 +227,7 @@ class BottomUpMergeSort
 
     // private static BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
 
-    public static BlockingCollection<WordOccurrences> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
+    public static async Task<BlockingCollection<WordOccurrences>> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
     {
        var blockingCollection = new BlockingCollection<WordOccurrences>(concurrentDictionary.Count);
 
@@ -228,14 +235,20 @@ class BottomUpMergeSort
             .ToList()
             .ForEach(element => blockingCollection.Add(new WordOccurrences { word = element.Key, occurrences = element.Value }));
 
+        var tasks = new List<Task>();
+
 
         int N = concurrentDictionary.Count;
         for (int sz = 1; sz < N; sz = sz + sz)
+        {
             // sz: subarray size
             for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
             {
-                merge(blockingCollection, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N-1));
+                tasks.Add(Task.Run(() => merge(blockingCollection, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1))));
+                await Task.WhenAll(tasks.ToArray());
             }
+            // await Task.WhenAll(tasks.ToArray());
+        }
 
         return blockingCollection;
     }
