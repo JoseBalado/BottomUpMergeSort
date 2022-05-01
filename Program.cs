@@ -15,7 +15,7 @@ public class Example
         // Task t;
 
         Console.WriteLine("Please, enter filename ...");
-        var fileName = "Sample.txt"; // Console.ReadLine() ?? "";
+        var fileName = "sdd.txt"; // Console.ReadLine() ?? "";
         Console.WriteLine();
 
         Console.WriteLine("Press any key to begin tasks...");
@@ -30,7 +30,7 @@ public class Example
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
-        var numberOfWords = 5;
+        var numberOfWords = 500;
         var numberOfTasks = wordsArray.Length / numberOfWords + 1;
         var concurrencyLevel = Environment.ProcessorCount / 2;
         var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
@@ -71,7 +71,7 @@ public class Example
             //     .ToList()
             //     .ForEach(element => Console.WriteLine($"{element.Key, -20} {element.Value}"));
 
-            (await BottomUpMergeSort.Sort(concurrentDictionary))
+            BottomUpMergeSort.Sort(concurrentDictionary)
                 .ToList()
                 .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
         }, token);
@@ -183,7 +183,7 @@ class PercentageCounter
         lock (this)
         {
             _total = _total + 100 / (float)_numberOfTasks;
-            Console.Write($"{_total:N1}% / ");
+            Console.Write($"{_total:N0}% / ");
         }
     }
 }
@@ -197,9 +197,9 @@ class WordOccurrences
 
 class BottomUpMergeSort
 {
-    public static async Task<BlockingCollection<WordOccurrences>> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
+    public static List<WordOccurrences> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
     {
-       var blockingCollection = new BlockingCollection<WordOccurrences>(concurrentDictionary.Count);
+       var blockingCollection = new List<WordOccurrences>(concurrentDictionary.Count);
 
         concurrentDictionary
             .ToList()
@@ -211,7 +211,7 @@ class BottomUpMergeSort
         int N = concurrentDictionary.Count;
         for (int sz = 1; sz < N; sz = sz + sz)
         {
-            BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
+            List<WordOccurrences> auxBC = new List<WordOccurrences>();
 
             blockingCollection
                 .ToList()
@@ -220,16 +220,18 @@ class BottomUpMergeSort
             // sz: subarray size
             for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
             {
-                tasks.Add(Task.Run(() => Merge(blockingCollection, auxBC, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1))));
-                await Task.WhenAll(tasks.ToArray());
+                // tasks.Add(Task.Run(() => Merge(blockingCollection, auxBC, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1))));
+                Merge(blockingCollection, auxBC, lo, lo + sz-1, Math.Min(lo + sz + sz -1, N - 1));
+                // await Task.WhenAll(tasks.ToArray());
             }
+                Console.WriteLine("Hello World");
             // await Task.WhenAll(tasks.ToArray());
         }
 
         return blockingCollection;
     }
 
-    public static void Merge(BlockingCollection<WordOccurrences> blockingCollection, BlockingCollection<WordOccurrences> auxBC, int lo, int mid, int hi)
+    public static void Merge(List<WordOccurrences> blockingCollection, List<WordOccurrences> auxBC, int lo, int mid, int hi)
     {
         int i = lo, j = mid + 1;
 
@@ -237,27 +239,26 @@ class BottomUpMergeSort
         {
             if (i > mid)
             {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(j).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(j).occurrences;
+                blockingCollection[k].word = auxBC[j].word;
+                blockingCollection[k].occurrences = auxBC[j].occurrences;
                 j++;
             }
             else if (j > hi)
             {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(i).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(i).occurrences;
+                blockingCollection[k].word = auxBC[i].word;
+                blockingCollection[k].occurrences = auxBC[i].occurrences;
                 i++;
             }
-            else if (auxBC.ElementAt(j).occurrences > auxBC.ElementAt(i).occurrences)
+            else if (auxBC[j].occurrences > auxBC[i].occurrences)
             {
-
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(j).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(j).occurrences;
+                blockingCollection[k].word = auxBC[j].word;
+                blockingCollection[k].occurrences = auxBC[j].occurrences;
                 j++;
             }
             else
             {
-                blockingCollection.ElementAt(k).word = auxBC.ElementAt(i).word;
-                blockingCollection.ElementAt(k).occurrences = auxBC.ElementAt(i).occurrences;
+                blockingCollection[k].word = auxBC[i].word;
+                blockingCollection[k].occurrences = auxBC[i].occurrences;
                 i++;
             }
         }
