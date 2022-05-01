@@ -35,12 +35,12 @@ public class Example
         // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
-        var numberOfWords = 500;
-        var numberOfTasks = wordsArray.Length / numberOfWords + 1;
+        var numberOfWordsPerArray = 500;
+        var numberOfTasks = wordsArray.Length / numberOfWordsPerArray + 1;
         var concurrencyLevel = Environment.ProcessorCount / 2;
         var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
 
-        var arrays = wordsArray.SplitArrayIntoArrays(numberOfWords);
+        var arrays = wordsArray.SplitArrayIntoArrays(numberOfWordsPerArray);
 
         ILogger percentageCounter = new PercentageLogger(numberOfTasks);
 
