@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UserData;
 using static Utils.Helpers;
 using static Algorithms.BottomUpMergeSort;
+using ExtensionMethods;
 using Logger;
 
 public class Example
@@ -112,14 +113,5 @@ public class Example
         // Display status of all tasks.
         // foreach (var task in tasks)
         //     Console.WriteLine("Task {0} status is now {1}", task.Id, task.Status);
-    }
-}
-public static class Extensions
-{
-    public static IEnumerable<IEnumerable<T>> SplitArrayIntoArrays<T>(this T[] arr, int numberOfWords)
-    {
-        for (var i = 0; i < arr.Length / numberOfWords + 1; i++) {
-            yield return arr.Skip(i * numberOfWords).Take(numberOfWords);
-        }
     }
 }
