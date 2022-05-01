@@ -121,7 +121,7 @@ public class Example
         try
         {
             // Open the text file using a stream reader.
-            using (var sr = new StreamReader(fileName))
+            using (var sr = new StreamReader($"text_files{Path.DirectorySeparatorChar}{fileName}"))
             {
                 // Read the stream as a string, and write the string to the console.
                 return sr.ReadToEnd().ToString();
@@ -204,29 +204,6 @@ class WordOccurrences
 
 class BottomUpMergeSort
 {
-    public static List<WordOccurrences> MergeSortRecursive(List<WordOccurrences> data, int left, int right)
-    {
-        if (left < right)
-        {
-            int m = left + (right - left) / 2;
-
-            MergeSortRecursive(data, left, m);
-            MergeSortRecursive(data, m + 1, right);
-            return MergeRecursive(data, left, right);
-        }
-        return data;
-    }
-    private static List<WordOccurrences> MergeRecursive(List<WordOccurrences> myList, int left, int right)
-    {
-        return myList
-            .Skip(left)
-            .Take(right - left)
-            .OrderByDescending(element => element.occurrences)
-            .ToList();
-    }
-
-    // private static BlockingCollection<WordOccurrences> auxBC = new BlockingCollection<WordOccurrences>();
-
     public static async Task<BlockingCollection<WordOccurrences>> Sort(ConcurrentDictionary<string, int> concurrentDictionary)
     {
        var blockingCollection = new BlockingCollection<WordOccurrences>(concurrentDictionary.Count);
