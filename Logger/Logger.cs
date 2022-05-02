@@ -21,6 +21,7 @@ namespace Logger
             lock (this)
             {
                 var newTotal = _total + 100 / (float)_numberOfTasks;
+                if(newTotal > 99) newTotal = 99;
                 if (((int)newTotal) == ((int)_total))
                 {
                     _total = newTotal;
