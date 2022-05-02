@@ -26,8 +26,7 @@ namespace Algorithms
                     .ToList()
                     .ForEach(element => auxBC.Add(new DataFormat { word = element.word, occurrences = element.occurrences }));
 
-                // sz: subarray size
-                for (int lo = 0; lo < N - sz; lo += sz + sz) // lo: subarray index
+                for (int lo = 0; lo < N - sz; lo += sz + sz)
                 {
                     if (ct.IsCancellationRequested)
                     {

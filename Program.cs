@@ -16,17 +16,26 @@ public class Example
         var fileName = Console.ReadLine() ?? "";
         var text = ReadFile(fileName);
 
-        Console.WriteLine("Press any key to begin tasks or 'c' to cancel and exit.");
+        Console.WriteLine("Press any key to begin tasks.");
+        Console.WriteLine("After the program starts press 'c' to cancel.");
         Console.ReadKey(true);
         Console.WriteLine();
 
         Console.WriteLine("Spliting the array...");
-        // Split the text in as many arrays as proccessors.
         var wordsArray = text.Split();
 
-        var numberOfWordsPerArray = wordsArray.Length / 32;
+        // Divide the total work to be done in several arrays.
+        // We make depend the size of the arrays on the total number of proccessors.
+        // But any other number could have been chosen.
+        var numberOfWordsPerArray = wordsArray.Length / Environment.ProcessorCount * 4;
+
+        // Total number of tasks that will be created is used by the logger to show
+        // an approximate percentage of work done as a guess.
         var numberOfTasks = wordsArray.Length / numberOfWordsPerArray + 1;
         if (numberOfTasks == 0) numberOfTasks = 1;
+
+        // Number of simultaneous tasks for proccessing words by occurrence.
+        // Number chosen depends on number of proccessors.
         var concurrencyLevel = Environment.ProcessorCount;
         var concurrentDictionary = new ConcurrentDictionary<string, int>(concurrencyLevel, wordsArray.Count());
 
