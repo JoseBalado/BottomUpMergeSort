@@ -77,7 +77,7 @@ public class Example
         try
         {
             await t;
-            Console.WriteLine($"{"word", -20} occurrence");
+            Console.WriteLine($"\n{"Word", -20} Occurrence");
             sortedArray
                 .ToList()
                 .ForEach(element => Console.WriteLine($"{element.word, -20} {element.occurrences }"));
