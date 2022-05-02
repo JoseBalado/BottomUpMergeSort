@@ -14,6 +14,7 @@ public class Example
 
         Console.WriteLine("\nPlease, enter filename ...");
         var fileName = Console.ReadLine() ?? "";
+        Console.WriteLine("Reading file...");
         var text = ReadFile(fileName);
 
         Console.WriteLine("Press any key to begin tasks.");
