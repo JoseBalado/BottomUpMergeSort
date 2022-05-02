@@ -9,7 +9,7 @@ namespace Logger
     public class PercentageLogger : ILogger
     {
         private int _numberOfTasks;
-        private float _total = 0;
+        private decimal _total = 0;
 
         public PercentageLogger(int numberOfTasks)
         {
@@ -20,9 +20,9 @@ namespace Logger
         {
             lock (this)
             {
-                var newTotal = _total + 100 / (float)_numberOfTasks;
+                var newTotal = _total + 100 / _numberOfTasks;
                 if(newTotal > 99) newTotal = 99;
-                if (((int)newTotal) == ((int)_total))
+                if (Decimal.Truncate(newTotal) == Decimal.Truncate(_total))
                 {
                     _total = newTotal;
                 }

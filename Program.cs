@@ -28,7 +28,7 @@ public class Example
         // Divide the total work to be done in several arrays.
         // We make depend the size of the arrays on the total number of proccessors.
         // But any other number could have been chosen.
-        var numberOfWordsPerArray = wordsArray.Length / Environment.ProcessorCount * 4;
+        var numberOfWordsPerArray = wordsArray.Length / (Environment.ProcessorCount * 4);
 
         // Total number of tasks that will be created is used by the logger to show
         // an approximate percentage of work done as a guess.
