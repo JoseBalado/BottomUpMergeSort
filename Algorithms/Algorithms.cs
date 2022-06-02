@@ -14,9 +14,6 @@ namespace Algorithms
                 .ToList()
                 .ForEach(element => blockingCollection.Add(new DataFormat { word = element.Key, occurrences = element.Value }));
 
-            var tasks = new List<Task>();
-
-
             int N = concurrentDictionary.Count;
             for (int sz = 1; sz < N; sz = sz + sz)
             {
